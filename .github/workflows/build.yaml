@@ -42,7 +42,7 @@ jobs:
       id: get-git-hash
       run: |
            echo -n "https://github.com/${GITHUB_REPOSITORY}/commit/" > src/runtime/version
-           git rev-parse --short HEAD  | xargs >> src/runtime/version
+           git rev-parse --short HEAD | xargs >> src/runtime/version
            git_hash="$(git rev-parse HEAD)"
            echo "git_hash=${git_hash}" >> "$GITHUB_OUTPUT"
 
@@ -74,5 +74,5 @@ jobs:
           GIT_HASH: ${{ needs.build.outputs.git_hash }}
         run: |
             notes="Build log: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            gh release create --repo "${{ github.repository }}" --notes "${notes}" "${GIT_HASH}"
-            find artifacts*/* -type f ! -name '*.debug' -exec gh release upload --repo "${{ github.repository }}" "${GIT_HASH}" {} \;
+            find artifacts*/* -type f ! -name '*.debug' \
+              -exec gh release create "${GIT_HASH}" --repo "${{ github.repository }}" --notes "${notes}" {} +
